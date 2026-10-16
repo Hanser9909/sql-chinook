@@ -20,11 +20,14 @@ SELECT *
 FROM tracks
 WHERE milliseconds > 300000;
 
+-- ============================================
+-- LEVEL 2: SORTING, DISTINCT AND JOINS
+-- ============================================
+
 -- 4. Show all tracks ordered from longest to shortest.
 SELECT *
 FROM tracks
 ORDER BY milliseconds DESC;
-
 
 -- 5. Show all distinct countries where customers live.
 SELECT DISTINCT country
@@ -71,3 +74,48 @@ FROM tracks
 INNER JOIN genres
     ON tracks.genre_id = genres.genre_id
 WHERE genres.name = 'Rock';
+
+-- ============================================
+-- LEVEL 3: AGGREGATIONS AND GROUPING
+-- ============================================
+
+-- 11. Count the customers in each country.
+SELECT
+    country,
+    COUNT(customer_id) AS total_customers
+FROM customers
+GROUP BY country;
+
+-- 12. Count the tracks belonging to each genre.
+SELECT
+    genres.name AS genre_name,
+    COUNT(tracks.track_id) AS total_tracks
+FROM genres
+INNER JOIN tracks
+    ON genres.genre_id = tracks.genre_id
+GROUP BY genres.name;
+
+-- 13. Count the tracks belonging to each artist.
+SELECT
+    artists.name AS artist_name,
+    COUNT(tracks.track_id) AS total_tracks
+FROM artists
+INNER JOIN albums
+    ON artists.artist_id = albums.artist_id
+INNER JOIN tracks
+    ON albums.album_id = tracks.album_id
+GROUP BY artists.name;
+
+-- 14. Calculate the average price of all tracks.
+SELECT
+    AVG(unit_price) AS average_price
+FROM tracks;
+
+-- 15. Calculate the total amount spent by each customer.
+SELECT
+    customers.first_name || ' ' || customers.last_name AS full_name,
+    SUM(invoices.total) AS total_spent
+FROM customers
+INNER JOIN invoices
+    ON customers.customer_id = invoices.customer_id
+GROUP BY customers.customer_id, customers.first_name, customers.last_name;
