@@ -119,3 +119,65 @@ FROM customers
 INNER JOIN invoices
     ON customers.customer_id = invoices.customer_id
 GROUP BY customers.customer_id, customers.first_name, customers.last_name;
+
+-- ============================================
+-- LEVEL 4: ADVANCED QUERIES
+-- ============================================
+
+-- 16. Show the top 10 artists with the most tracks.
+SELECT
+    artists.name AS artist_name,
+    COUNT(tracks.track_id) AS total_tracks
+FROM artists
+INNER JOIN albums
+    ON artists.artist_id = albums.artist_id
+INNER JOIN tracks
+    ON albums.album_id = tracks.album_id
+GROUP BY artists.artist_id, artists.name
+ORDER BY total_tracks DESC
+LIMIT 10;
+
+-- 17. Show the top 5 genres with the most tracks.
+SELECT
+    genres.name AS genre_name,
+    COUNT(tracks.track_id) AS total_tracks
+FROM genres
+LEFT JOIN tracks
+    ON genres.genre_id = tracks.genre_id
+GROUP BY genres.genre_id, genres.name
+ORDER BY total_tracks DESC
+LIMIT 5;
+
+-- 18. Show the top 10 customers who spent the most money.
+SELECT
+    customers.first_name || ' ' || customers.last_name AS full_name,
+    SUM(invoices.total) AS total_spent
+FROM customers
+INNER JOIN invoices
+    ON customers.customer_id = invoices.customer_id
+GROUP BY customers.customer_id, customers.first_name, customers.last_name
+ORDER BY total_spent DESC
+LIMIT 10;
+
+-- 19. Show artists with more than 20 tracks.
+SELECT
+    artists.name AS artist_name,
+    COUNT(tracks.track_id) AS total_tracks
+FROM artists
+INNER JOIN albums
+    ON artists.artist_id = albums.artist_id
+INNER JOIN tracks
+    ON albums.album_id = tracks.album_id
+GROUP BY artists.artist_id, artists.name
+HAVING COUNT(tracks.track_id) > 20;
+
+-- 20. Show customers who have spent more than 40 in total.
+SELECT
+    customers.first_name || ' ' || customers.last_name AS full_name,
+    SUM(invoices.total) AS total_spent
+FROM customers
+INNER JOIN invoices
+    ON customers.customer_id = invoices.customer_id
+GROUP BY customers.customer_id, customers.first_name, customers.last_name
+HAVING SUM(invoices.total) > 40
+ORDER BY total_spent DESC;
