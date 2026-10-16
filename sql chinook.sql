@@ -181,3 +181,45 @@ INNER JOIN invoices
 GROUP BY customers.customer_id, customers.first_name, customers.last_name
 HAVING SUM(invoices.total) > 40
 ORDER BY total_spent DESC;
+
+-- ============================================
+-- LEVEL 5: WINDOW FUNCTIONS
+-- ============================================
+
+-- 21. Rank all tracks by price, from highest to lowest.
+SELECT
+    name AS track_name,
+    unit_price,
+    ROW_NUMBER() OVER (
+        ORDER BY unit_price DESC, track_id
+    ) AS ranking
+FROM tracks;
+
+-- 22. Rank tracks by price within each genre.
+SELECT
+    tracks.name AS track_name,
+    genres.name AS genre_name,
+    tracks.unit_price,
+    ROW_NUMBER() OVER (
+        PARTITION BY genres.name
+        ORDER BY tracks.unit_price DESC, tracks.track_id
+    ) AS ranking
+FROM tracks
+INNER JOIN genres
+    ON tracks.genre_id = genres.genre_id;
+
+-- 23. Show each invoice alongside the total of all invoices.
+SELECT
+    invoice_id,
+    total,
+    SUM(total) OVER () AS total_general
+FROM invoices;
+
+-- 24. Calculate the cumulative total of invoices ordered by ID.
+SELECT
+    invoice_id,
+    total,
+    SUM(total) OVER (
+        ORDER BY invoice_id
+    ) AS total_acumulado
+FROM invoices;
